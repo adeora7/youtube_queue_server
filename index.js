@@ -3,6 +3,7 @@ var app = express();
 var Db= require('mongodb').Db;
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
+
 app.set('port', (process.env.PORT || 5000));
 app.set('mongo_url', (process.env.MONGO_URI || 'mongodb://root:password@ds145302.mlab.com:45302/youtube_queue_server'));
 
@@ -15,13 +16,21 @@ app.set('view engine', 'ejs');
 app.get('/', function(request, response) {
 	
 	MongoClient.connect('mongodb://root:password@ds145302.mlab.com:45302/youtube_queue_server', {native_parser:true}, function(err, db) {
-	    assert.equal(null, err);
-	    db.collection('playlists').find(function(err, result) {
-		    assert.equal(null, err);
-		    //res.send(result);
-		    db.close();
-	    });
-	    response.send('hello world');
+		assert.equal(null, err);
+		var collection = db.collection('playlists');
+		var all_playlists = []
+	    	var stream = collection.find().stream();
+	    	stream.on("data", function(item){ 
+		    	console.log("data came ");// + JSON.stringify(item));
+			all_playlists.push(item);
+		    
+		});
+	    	stream.on("end", function(item){ 
+			console.log("That's it");
+			response.send(all_playlists);
+		});
+
+	    	//response.send('hello world');
 	});
 		
 });
