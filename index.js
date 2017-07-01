@@ -13,13 +13,15 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
-app.get('/', function(request, response) {
-	
+app.get('/search/:query', function(request, response) {
+	console.log(request.params.query);
 	MongoClient.connect('mongodb://root:password@ds145302.mlab.com:45302/youtube_queue_server', {native_parser:true}, function(err, db) {
 		assert.equal(null, err);
 		var collection = db.collection('playlists');
 		var all_playlists = []
-	    	var stream = collection.find().stream();
+		var q1 = request.params.query;
+		var q2 = '^'+request.params.query;
+	    	var stream = collection.find({ $or: [ {"name": {'$regex': q1 }}, {"PID": {'$regex': q2 }}   ] }).stream();
 	    	stream.on("data", function(item){ 
 		    	console.log("data came ");// + JSON.stringify(item));
 			all_playlists.push(item);
