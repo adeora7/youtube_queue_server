@@ -59,16 +59,16 @@ app.post('/upload/playlist/', function(request, response){
 			{
 				if(collectionC.update({},{ $inc: { playlists: 1 }  }))
 				{
-					console.log("success!");
+					response.send("success!");
 				}
 				else
 				{
-					console.log("failure!");
+					response.send("failure!");
 				}
 			}
 			else
 			{
-				console.log("Playlist could not be uploaded.");
+				response.send("Playlist could not be uploaded.");
 			}
 		});
 		
