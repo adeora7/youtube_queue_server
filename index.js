@@ -1,11 +1,16 @@
 var express = require('express');
-var app = express();
 var Db= require('mongodb').Db;
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
+var bodyParser = require('body-parser'); 
+
+var app = express();
 
 app.set('port', (process.env.PORT || 5000));
 app.set('mongo_url', (process.env.MONGO_URI || 'mongodb://root:password@ds145302.mlab.com:45302/youtube_queue_server'));
+
+app.use(bodyParser.json({ type: 'application/*+json' }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname + '/public'));
 
@@ -44,22 +49,29 @@ app.post('/upload/playlist/', function(request, response){
 	MongoClient.connect('mongodb://root:password@ds145302.mlab.com:45302/youtube_queue_server', {native_parser:true}, function(err,db){
 		assert.equal(null, err);
 		var collectionC = db.collection('counter');
-		var counter = CollectionC.findOne();
-		var currID = counter.playlists + 1;
-		var collectionP = db.collection('playlists');
-
-		//insert into playlists
-		if( collectionP.insert({ PID: currID, name: request.params.name, videos: request.params.videos }) )
-		{
-			if(collectionC.update({},{ $inc: { playlists: 1 }  }))
+		collectionC.findOne({}, function(err, doc){
+			
+			var currID = parseInt(doc.playlists,10) + 1;
+			var collectionP = db.collection('playlists');
+		
+			//insert into playlists
+			if( collectionP.insert({ PID: currID, name: request.body.name, videos: request.body.videos }) )
 			{
-				response.send("success!");
+				if(collectionC.update({},{ $inc: { playlists: 1 }  }))
+				{
+					console.log("success!");
+				}
+				else
+				{
+					console.log("failure!");
+				}
 			}
 			else
 			{
-				response.send("failure!");
+				console.log("Playlist could not be uploaded.");
 			}
-		}
+		});
+		
 	});
 
 });

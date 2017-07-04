@@ -12,7 +12,8 @@
   "dependencies": {
     "mongodb": "2.0.x",
     "ejs": "2.5.6",
-    "express": "4.15.2"
+    "express": "4.15.2",
+    "body-parser": "1.17.x"
   },
   "repository": {
     "type": "git",
