@@ -41,7 +41,7 @@ app.get('/search/:query', function(request, response) {
 });
 
 app.post('/upload/playlist/', function(request, response){
-	MongoClient.connect('url', {native_parser:true}, function(err,db){
+	MongoClient.connect('mongodb://root:password@ds145302.mlab.com:45302/youtube_queue_server', {native_parser:true}, function(err,db){
 		assert.equal(null, err);
 		var collectionC = db.collection('counter');
 		var counter = CollectionC.findOne();
