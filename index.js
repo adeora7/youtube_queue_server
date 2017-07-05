@@ -59,16 +59,16 @@ app.post('/upload/playlist/', function(request, response){
 			{
 				if(collectionC.update({},{ $inc: { playlists: 1 }  }))
 				{
-					response.send("success!");
+					response.send("Success! Playlist uploaded to store with PID:"+currID);
 				}
 				else
 				{
-					response.send("failure!");
+					response.send("Failed to upload playlist to store.");
 				}
 			}
 			else
 			{
-				response.send("Playlist could not be uploaded.");
+				response.send("Playlist could not be uploaded to store.");
 			}
 		});
 		
