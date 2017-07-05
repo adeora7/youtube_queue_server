@@ -26,10 +26,7 @@ app.get('/search/:query', function(request, response) {
 		var all_playlists = [];
 			
 		var q1 = request.params.query;
-		var q2 = '^'+request.params.query;
-		
-	    	var stream = collectionP.find({ $or: [ {"name": { $regex: q1, $options: 'i' }}, {"PID": {'$regex': q2 }}   ] }).limit(30).stream();
-		
+		var stream = collectionP.find({ $or: [ {"name":{$regex: q1, $options: 'i'}}, {$where: "/.*"+q1+".*/.test(this.PID)"} ]} ).limit(30).stream();	
 		stream.on("data", function(item){ 
 		    	console.log("data came ");
 			all_playlists.push(item);
