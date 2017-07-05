@@ -50,9 +50,11 @@ app.post('/upload/playlist/', function(request, response){
 			
 			var currID = parseInt(doc.playlists,10) + 1;
 			var collectionP = db.collection('playlists');
-			var vids = JSON.parse(request.body.videos);	
+			var nm = request.body.name + "-" +currID;
+			var vids = JSON.parse(request.body.videos);
+
 			//insert into playlists
-			if( collectionP.insert({ PID: currID, name: request.body.name, videos: vids }) )
+			if( collectionP.insert({ PID: currID, name: nm, videos: vids }) )
 			{
 				if(collectionC.update({},{ $inc: { playlists: 1 }  }))
 				{
