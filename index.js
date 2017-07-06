@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
-app.set('mongo_url', (process.env.MONGO_URI || 'mongodb://root:password@ds145302.mlab.com:45302/youtube_queue_server'));
+app.set('mongo_url', (process.env.MONGO_URI));
 
 app.use(bodyParser.json({ type: 'application/*+json' }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,7 +20,7 @@ app.set('view engine', 'ejs');
 
 app.get('/search/:query', function(request, response) {
 	console.log(request.params.query);
-	MongoClient.connect('mongodb://root:password@ds145302.mlab.com:45302/youtube_queue_server', {native_parser:true}, function(err, db) {
+	MongoClient.connect( app.settings.mongo_url, {native_parser:true}, function(err, db) {
 		assert.equal(null, err);
 		var collectionP = db.collection('playlists');
 		var all_playlists = [];
@@ -36,40 +36,49 @@ app.get('/search/:query', function(request, response) {
 			console.log("That's it");
 			response.send(all_playlists);
 		});
-
-	    	//response.send('hello world');
 	});
 		
 });
 
 app.post('/upload/playlist/', function(request, response){
-	MongoClient.connect('mongodb://root:password@ds145302.mlab.com:45302/youtube_queue_server', {native_parser:true}, function(err,db){
+	MongoClient.connect(app.settings.mongo_url, {native_parser:true}, function(err,db){
 		assert.equal(null, err);
-		var collectionC = db.collection('counter');
-		collectionC.findOne({}, function(err, doc){
-			
-			var currID = parseInt(doc.playlists,10) + 1;
-			var collectionP = db.collection('playlists');
-			var nm = request.body.name + "-" +currID;
-			var vids = JSON.parse(request.body.videos);
+		var vids = JSON.parse(request.body.videos);
+		var collectionP = db.collection('playlists');
 
-			//insert into playlists
-			if( collectionP.insert({ PID: currID, name: nm, videos: vids }) )
+		collectionP.find({ videos: vids }, function(err, doc){
+			if(doc)
 			{
-				if(collectionC.update({},{ $inc: { playlists: 1 }  }))
-				{
-					response.send("Success! Playlist uploaded to store with PID:"+currID);
-				}
-				else
-				{
-					response.send("Failed to upload playlist to store.");
-				}
+				response.send("Failed. Possibly Duplicate Playlist");
 			}
 			else
 			{
-				response.send("Playlist could not be uploaded to store.");
+				var collectionC = db.collection('counter');
+				collectionC.findOne({}, function(err, doc){
+					
+					var currID = parseInt(doc.playlists,10) + 1;
+					var nm = request.body.name + "-" +currID;
+
+					if( collectionP.insert({ PID: currID, name: nm, videos: vids }) )
+					{
+						if(collectionC.update({},{ $inc: { playlists: 1 }  }))
+						{
+							response.send("Success! Playlist uploaded to store with PID:"+currID);
+						}
+						else
+						{
+							response.send("Failed to upload playlist to store.");
+						}
+					}
+					else
+					{
+						response.send("Playlist could not be uploaded to store.");
+					}
+				});
 			}
 		});
+
+		
 		
 	});
 
