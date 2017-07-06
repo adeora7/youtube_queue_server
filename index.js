@@ -46,10 +46,10 @@ app.post('/upload/playlist/', function(request, response){
 		var vids = JSON.parse(request.body.videos);
 		var collectionP = db.collection('playlists');
 
-		collectionP.find({ videos: vids }, function(err, doc){
+		collectionP.findOne({ videos: vids }, function(err, doc){
 			if(doc)
 			{
-				response.send("Failed. Possibly Duplicate Playlist");
+				response.send("Failed. Possibly Duplicate Playlist"+doc.name);
 			}
 			else
 			{
