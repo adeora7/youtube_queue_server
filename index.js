@@ -49,7 +49,7 @@ app.post('/upload/playlist/', function(request, response){
 		collectionP.findOne({ videos: vids }, function(err, doc){
 			if(doc)
 			{
-				response.send("Failed. Possibly Duplicate Playlist "+doc.name);
+				response.send("Failed. Possibly Duplicate Playlist - "+doc.name);
 			}
 			else
 			{
