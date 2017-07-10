@@ -58,6 +58,7 @@ app.get('/featured', function(request, response) {
 				});
 
 		});
+});
 
 app.post('/upload/playlist/', function(request, response){
 		MongoClient.connect(app.settings.mongo_url, {native_parser:true}, function(err,db){
@@ -96,11 +97,7 @@ app.post('/upload/playlist/', function(request, response){
 							});
 						}
 				});
-
-
-
 		});
-
 });
 
 app.listen(app.get('port'), function() {
