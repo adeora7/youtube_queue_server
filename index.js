@@ -28,7 +28,7 @@ app.get('/search/:query', function(request, response) {
 				var q1 = request.params.query;
 				var stream = collectionP.find({ $or: [ {"name":{$regex: q1, $options: 'i'}}, {$where: "/.*"+q1+".*/.test(this.PID)"} ]} ).limit(30).stream();
 				stream.on("data", function(item){
-						console.log("data came ");
+						console.log("data came");
 						all_playlists.push(item);
 
 						});
@@ -81,14 +81,14 @@ app.post('/upload/playlist/', function(request, response){
 
 								if( collectionP.insert({ PID: currID, name: nm, videos: vids }) )
 								{
-								if(collectionC.update({},{ $inc: { playlists: 1 }  }))
-								{
-								response.send("Success! Playlist uploaded to store with PID:"+currID);
-								}
-								else
-								{
-								response.send("Failed to upload playlist to store.");
-								}
+									if(collectionC.update({},{ $inc: { playlists: 1 }  }))
+									{
+									response.send("Success! Playlist uploaded to store with PID:"+currID);
+									}
+									else
+									{
+									response.send("Failed to upload playlist to store.");
+									}
 								}
 								else
 								{
