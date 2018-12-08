@@ -2,7 +2,7 @@
   "name": "youtube_queue_server",
   "description": "A Node server for youtube queue chrome extension",
   "repository": "https://github.com/adeora7/youtube_queue_server",
-  "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/master/public/node.svg",
+  "logo": "https://cdn.jsdelivr.net/gh/heroku/node-js-getting-started/public/node.svg",
   "keywords": ["node", "express", "heroku"],
   "image": "heroku/nodejs"
 }
